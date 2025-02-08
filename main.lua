@@ -1,45 +1,51 @@
 -- This will become a high-level build system for C projects
 
 local function main()
-	print("Hello world from the jougetsu build system!")
-
-	local handle, err = io.popen("ls")
-	if not handle then
+	local fhandle, err = io.popen("ls *.c 2>/dev/null")
+	if not fhandle then
 		print("ERROR: Failed to execute 'ls': " .. tostring(err))
 		os.exit(1)
 	end
 
-	local result = handle:read("*a")
-	handle:close()
-
-	if result then
-		print("The current directory content is:")
-		print(result)
-	else
-		print("ERROR: No output recieved from 'ls'.")
+	local files = {}
+	for filename in fhandle:read("*a"):gmatch("[^\r\n]+") do
+		table.insert(files, filename)
 	end
+	fhandle:close()
 
-	local build_file = io.open("build.ninja", "w")
+	local build_file = nil
+	build_file, err = io.open("build.ninja", "w")
 	if build_file == nil then
+		print("Failed to create a build.ninja file.")
 		os.exit(1)
 	end
+
 	local config = [[
 cflags = -Wall
 
-rule cc
+rule compile
     command = clang $cflags -c $in -o $out
 
-rule ln
+rule link
     command = clang $in -o $out
 
-build main.o: cc main.c
-build foo.o: cc foo.c
-build bar.o: cc bar.c
-
-build main: ln main.o foo.o bar.o
 ]]
 
+	for _, filename in ipairs(files) do
+		config = config .. "build " .. filename:gsub("%.c$", ".o") .. ": compile " .. filename .. "\n"
+	end
+	config = config .. "\n"
+
+	config = config .. "build main: link"
+	for _, filename in ipairs(files) do
+		config = config .. " " .. filename:gsub("%.c$", ".o")
+	end
+	config = config .. "\n"
+
 	build_file:write(config)
+	build_file:close()
+
+	print(config)
 end
 
 main()

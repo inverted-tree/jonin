@@ -1,0 +1,9 @@
+# Compiled Object files
+*.o
+
+# Ninja related stuff
+build.ninja
+.ninja_log
+
+# The compiled test executable
+main

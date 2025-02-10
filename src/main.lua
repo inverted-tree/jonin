@@ -36,9 +36,9 @@ local function get_build_opts()
 end
 
 local function main()
-	local opts = get_build_opts()
+	local options = get_build_opts()
 
-	local fhandle, err = io.popen("ls " .. opts.files[1] .. " 2>/dev/null")
+	local fhandle, err = io.popen("ls " .. options.files[1] .. " 2>/dev/null")
 	if not fhandle then
 		print("ERROR: Failed to execute 'ls': " .. tostring(err))
 		os.exit(1)
@@ -59,7 +59,7 @@ local function main()
 
 	local build_script = ""
 	build_script = build_script .. "cflags ="
-	for _, flag in ipairs(opts.cflags) do
+	for _, flag in ipairs(options.cflags) do
 		build_script = build_script .. " -" .. flag
 	end
 	build_script = build_script
@@ -79,7 +79,7 @@ rule link
 	end
 	build_script = build_script .. "\n"
 
-	build_script = build_script .. "build " .. opts.target .. ": link"
+	build_script = build_script .. "build " .. options.target .. ": link"
 	for _, filename in ipairs(files) do
 		build_script = build_script .. " " .. filename:gsub("%.c$", ".o")
 	end

@@ -1,7 +1,7 @@
 -- This will become a high-level build system for C projects
 
 local function main()
-	local fhandle, err = io.popen("ls *.c 2>/dev/null")
+	local fhandle, err = io.popen("ls test/*.c 2>/dev/null")
 	if not fhandle then
 		print("ERROR: Failed to execute 'ls': " .. tostring(err))
 		os.exit(1)

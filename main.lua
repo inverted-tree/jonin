@@ -1,7 +1,44 @@
 -- This will become a high-level build system for C projects
 
+local function prequire(m)
+	local ok, err = pcall(require, m)
+	if not ok then
+		return nil, err
+	end
+	return err
+end
+
+local function get_build_opts()
+	local modname = "build-options"
+	local opts = prequire(modname)
+	if not opts then
+		error("Failed to load module '" .. modname .. "'")
+	end
+	if type(opts) ~= "table" then
+		error("Expected 'build-options' to return a table, but got " .. type(opts))
+	end
+
+	local defopts = {
+		target = "main",
+		files = { "src/*.c" },
+		mode = "debug",
+		define = {},
+		cflags = {},
+	}
+
+	for key, value in pairs(defopts) do
+		if opts[key] == nil then
+			opts[key] = value
+		end
+	end
+
+	return opts
+end
+
 local function main()
-	local fhandle, err = io.popen("ls test/*.c 2>/dev/null")
+	local opts = get_build_opts()
+
+	local fhandle, err = io.popen("ls " .. opts.files[1] .. " 2>/dev/null")
 	if not fhandle then
 		print("ERROR: Failed to execute 'ls': " .. tostring(err))
 		os.exit(1)
@@ -20,8 +57,14 @@ local function main()
 		os.exit(1)
 	end
 
-	local config = [[
-cflags = -Wall
+	local build_script = ""
+	build_script = build_script .. "cflags ="
+	for _, flag in ipairs(opts.cflags) do
+		build_script = build_script .. " -" .. flag
+	end
+	build_script = build_script
+		.. [[
+
 
 rule compile
     command = clang $cflags -c $in -o $out
@@ -32,20 +75,20 @@ rule link
 ]]
 
 	for _, filename in ipairs(files) do
-		config = config .. "build " .. filename:gsub("%.c$", ".o") .. ": compile " .. filename .. "\n"
+		build_script = build_script .. "build " .. filename:gsub("%.c$", ".o") .. ": compile " .. filename .. "\n"
 	end
-	config = config .. "\n"
+	build_script = build_script .. "\n"
 
-	config = config .. "build main: link"
+	build_script = build_script .. "build " .. opts.target .. ": link"
 	for _, filename in ipairs(files) do
-		config = config .. " " .. filename:gsub("%.c$", ".o")
+		build_script = build_script .. " " .. filename:gsub("%.c$", ".o")
 	end
-	config = config .. "\n"
+	build_script = build_script .. "\n"
 
-	build_file:write(config)
+	build_file:write(build_script)
 	build_file:close()
 
-	print(config)
+	print(build_script)
 end
 
 main()

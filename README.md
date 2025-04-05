@@ -21,7 +21,7 @@ git clone https://github.com/inverted-tree/jonin.git && cd jonin
 It contains a [shell script](/jonin.sh) to run the program in the Lua interpreter.
 
 ## Usage
-Simply running the shell script executes the build system. Jōnin expects a [build-options.lua](https://github.com/inverted-tree/jonin/blob/main/build-options.lua) file, which is used to script the build process. After the Ninja files have been generated, just run `ninja` and your project should be built.
+Simply running the shell script executes the build system. Jōnin expects a [build-options.lua](https://github.com/inverted-tree/jonin/blob/main/test/build-options.lua) file, which is used to script the build process. After the Ninja files have been generated, just run `ninja` and your project should be built.
 
 ---
 

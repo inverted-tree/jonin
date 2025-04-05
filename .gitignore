@@ -7,6 +7,3 @@ build.ninja
 
 # The compiled test executable
 main
-
-# Configurations
-build-options.lua

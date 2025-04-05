@@ -1,11 +1,11 @@
 <div align="center">
     <img width="128" height="128" src="res/ninja-panda.jpg">
     <h1>Jōnin</h1>
-    <p>A lightweight, high-level, scriptable build system that generates Ninja files for your C and C++ projects.</p>
+    <p>A lightweight, high-level, scriptable build system that generates Ninja files for your C (and soon C++) projects.</p>
 </div>
 
 > [!WARNING]
-> This project is currently in the early development phase and not yet ready for production use. Things are constantly changing and further development may break existing functionalities. Please wait for an official alpha release.
+> This project is currently in the early development phase and not yet considered stable. This means that following releases might break your build scripts.
 
 
 # Installation
@@ -18,10 +18,10 @@ To start generating build files, simply clone this repository:
 ```sh
 git clone https://github.com/inverted-tree/jonin.git && cd jonin
 ```
-It contains a [shell script](/jogetsu.sh) to run the program in the Lua interpreter.
+It contains a [shell script](/jonin.sh) to run the program in the Lua interpreter.
 
 ## Usage
-Simply running the shell script executes the build system. Jōnin expects a `build-options.lua` file, which must return a Lua table. This table specifies the build options, which are then used for generating the Ninja files. After these files have been generated, just run `ninja` and your project should be built.
+Simply running the shell script executes the build system. Jōnin expects a [build-options.lua](https://github.com/inverted-tree/jonin/blob/main/build-options.lua) file, which is used to script the build process. After the Ninja files have been generated, just run `ninja` and your project should be built.
 
 ---
 

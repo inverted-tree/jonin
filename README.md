@@ -5,7 +5,7 @@
 </div>
 
 > [!WARNING]
-> This project is currently in the early development phase and not yet considered stable. This means that following releases might break your build scripts.
+> This project is currently in the early development phase and not yet considered stable. It is only supported on UNIX-like systems.
 
 
 # Installation
@@ -18,10 +18,21 @@ To start generating build files, simply clone this repository:
 ```sh
 git clone https://github.com/inverted-tree/jonin.git && cd jonin
 ```
-It contains a [shell script](/jonin.sh) to run the program in the Lua interpreter.
+It contains a [wrapper shell script](/jonin) to properly run the program in the Lua interpreter. To make this wrapper availabe anywhere on your system, export it to your shell config i.e. `.bashrc` or `.zshrc` with this command:
+```sh
+[ -f ~/.bashrc ] && grep -qxF "export PATH=\"$(pwd):\$PATH\"" ~/.bashrc || echo "export PATH=\"$(pwd):\$PATH\"" >> ~/.bashrc
+```
 
 ## Usage
-Simply running the shell script executes the build system. Jōnin expects a [build-options.lua](https://github.com/inverted-tree/jonin/blob/main/test/build-options.lua) file, which is used to script the build process. After the Ninja files have been generated, just run `ninja` and your project should be built.
+Calling the [wrapper script](/jonin) executes the build system. Jōnin expects a [build-options.lua](/test/build-options.lua) file, which is used to script the build process. Thus, calling
+```lua
+require("jonin")
+```
+is mandatory when scripting the build. There can be multiple configuration scripts in a project, which can be called separately by passing them as an argument to `jonin`:
+```sh
+jonin ./test/test-config.lua
+```
+After the Ninja build files have been generated, just run `ninja` and your project should be built.
 
 ---
 

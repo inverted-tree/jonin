@@ -1,8 +1,4 @@
-require("include.jonin")
-
-Project("ExampleTestProject")
-
-Version(0.1)
+require("jonin")
 
 Target("HelloWorld", {
 	cc = "clang",

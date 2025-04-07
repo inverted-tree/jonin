@@ -1,8 +1,7 @@
 local utils = require("src.utils")
 
 local project = {
-	name = nil,
-	version = nil,
+	cwd = os.getenv("JONIN_WORKING_DIRECTORY"),
 	targets = {},
 	filePath = "build.ninja",
 	fileHandle = nil,
@@ -14,14 +13,6 @@ local function loadModule(moduleName)
 		error(err)
 	end
 	return mod
-end
-
-local function setProjectName(n)
-	project.name = n
-end
-
-local function setProjectVersion(v)
-	project.version = v
 end
 
 local function createTarget(name, opts)

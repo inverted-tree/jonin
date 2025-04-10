@@ -3,8 +3,7 @@ local utils = require("src.utils")
 local project = {
 	cwd = os.getenv("JONIN_WORKING_DIRECTORY"),
 	targets = {},
-	filePath = "build.ninja",
-	fileHandle = nil,
+	ninjaFile = "build.ninja",
 }
 
 local function loadModule(moduleName)
@@ -16,10 +15,10 @@ local function loadModule(moduleName)
 end
 
 local function createTarget(name, opts)
-	local generators = loadModule("src.generators")
+	loadModule("src.generators")
 
 	local target = {
-		filePath = "build.ninja",
+		filePath = project.ninjaFile,
 	}
 
 	target.cc = opts.cc or "cc"
@@ -49,7 +48,5 @@ local function createTarget(name, opts)
 end
 
 return {
-	setProjectName = setProjectName,
-	setProjectVersion = setProjectVersion,
 	createTarget = createTarget,
 }

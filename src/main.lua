@@ -21,6 +21,7 @@ local function createTarget(name, opts)
 		filePath = project.ninjaFile,
 	}
 
+	target.language = utils.getLanguage(opts.language)
 	target.cc = opts.cc or "cc"
 
 	target.compileRule = Rule.new("compile", target.cc .. " $cflags -c $in -o $out")
@@ -30,7 +31,7 @@ local function createTarget(name, opts)
 		target.flags = Binding.new("cflags", opts.cflags)
 	end
 
-	target.files = utils.parseFilePaths(opts.files)
+	target.files = utils.parseFilePaths(target.language, opts.files)
 
 	local ofiles = {}
 	target.compileStmts = {}

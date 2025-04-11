@@ -7,13 +7,14 @@ require("jonin")
 Target(
 	"HelloWorld", -- name of the target
 	{
+		language = "c", -- specify the language (optional, only influences which files will be included)
 		cc = "clang", -- set the compiler (optional, defaults to 'cc')
 		cflags = { -- set compile flags to be used by your compiler
 			"-Wall",
 			"-Wextra",
 		},
-		files = { -- define the source files to use in this build (globbing with '*' is supported)
-			"./test/hello-world/src/",
+		files = { -- define the source files to use in this build (file and dir globbing with '*'/'**' is supported)
+			"test/**/src",
 		},
 	}
 )

@@ -1,3 +1,20 @@
+LANGUAGE = {
+	C = "c",
+	CPP = "c++",
+}
+
+local function assertNotNil(value, name)
+	local msg = nil
+	if value == nil then
+		if name then
+			msg = "'" .. name .. "'"
+		else
+			msg = "Argument"
+		end
+		error(msg .. " must not be nil.", 3)
+	end
+end
+
 local function prequire(mod)
 	local ok, err = pcall(require, mod)
 	if not ok then
@@ -16,59 +33,113 @@ local function executeCommand(command)
 	local handle = io.popen(command)
 	if handle == nil then
 		error(string.format("Could not execute command '%s'", command), 2)
-		os.exit(1)
 	end
-	local result = handle:read("*a")
-	handle:close()
-	return result
-end
 
-local function toStringSeq(str)
 	local result = {}
-	for s in str:gmatch("[^\r\n]+") do
-		if s ~= "" then
-			table.insert(result, s)
-		end
+	for line in handle:lines() do
+		table.insert(result, line)
 	end
+	handle:close()
+
 	return result
 end
 
-local function globToFind(path)
-	local base, filename = nil, nil
-
-	base, filename = path:match("^(.-)/%*%*/([^/]+)$")
-	if base and filename then
-		return string.format("find %q -type f -name %q", base, filename)
+local function getLanguage(language)
+	if language == "c" then
+		return LANGUAGE.C
+	elseif language == "c++" or language == "cpp" then
+		return LANGUAGE.CPP
 	end
-
-	base, filename = path:match("^(.-)/([^/]*%*[^/]*)$")
-	if base and filename then
-		return string.format("find %q -maxdepth 1 -type f -name %q", base, filename)
-	end
-
-	return string.format("find %q -type f", path)
 end
 
-local function extraceSourceFiles(files)
-	local sources = {}
-	for _, file in ipairs(files) do
-		if file:match("%.c") then
-			table.insert(sources, file)
+local function filter(fun, list)
+	local filtered = {}
+	for _, element in ipairs(list) do
+		if fun(element) then
+			table.insert(filtered, element)
 		end
 	end
-	return sources
+	return filtered
 end
 
-local function getFiles(path)
-	local command = globToFind(path)
-	local result = executeCommand(command)
-	return extraceSourceFiles(toStringSeq(result))
+local function filterCFiles(files)
+	local f = function(s)
+		if s:match("%.c$") then
+			return true
+		else
+			return false
+		end
+	end
+	return filter(f, files)
 end
 
-local function parseFilePaths(paths)
+local function filterCppFiles(files)
+	local f = function(s)
+		if s:match("%.cc$") or s:match("%.cpp$") or s:match("%.cxx") then
+			return true
+		else
+			return false
+		end
+	end
+	return filter(f, files)
+end
+
+local function splitPath(path)
+	local function normalize(d)
+		if d:match("^/") or d:match("^%./") then
+			return d
+		else
+			return "./" .. d
+		end
+	end
+
+	if path:match("/$") then
+		return normalize(path:gsub("/+$", "")), ""
+	end
+
+	local dir, name = path:match("^(.-)([^/\\]*)$")
+
+	if not name:find("%.") or name == "" then
+		return normalize(path:gsub("/+$", "")), ""
+	end
+
+	if dir == "" then
+		dir = "."
+	else
+		dir = path:gsub("/+$", "")
+		if dir == "" then
+			dir = "/"
+		end
+	end
+
+	return normalize(dir), name
+end
+
+local function getFiles(language, path)
+	local dir, name = splitPath(path)
+	local cmd = nil
+	if name == "" then
+		cmd = string.format("find -L %s", dir)
+		local files = executeCommand(cmd)
+		if language == LANGUAGE.C then
+			return filterCFiles(files)
+		elseif language == LANGUAGE.CPP then
+			return filterCppFiles(files)
+		else
+			return files
+		end
+	else
+		cmd = string.format("find -L %s -name '%s'", dir, name)
+		return executeCommand(cmd)
+	end
+end
+
+local function parseFilePaths(language, paths)
+	assertNotNil(paths, "Paths")
+
 	local files = {}
 	for _, path in ipairs(paths) do
-		join(files, getFiles(path))
+		join(files, getFiles(language, path))
 	end
 
 	return files
@@ -77,4 +148,5 @@ end
 return {
 	prequire = prequire,
 	parseFilePaths = parseFilePaths,
+	getLanguage = getLanguage,
 }

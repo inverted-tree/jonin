@@ -1,26 +1,17 @@
 -- The generators module offers a straight-forward interface to define the components that make up the Ninja build file
 
+local utils = require("src.utils")
+local asserts = utils.prequire("src.assertions")
+
 -- Bindings are simple key-value pairs
 
 Binding = {}
 Binding.__index = Binding
 
-local function assertIsNonEmptyString(str, name)
-	if type(str) ~= "string" or str:len() == 0 then
-		local msg = nil
-		if name then
-			msg = "'" .. name .. "'"
-		else
-			msg = "Parameter"
-		end
-		error(msg .. " must be a non-empty string.", 3)
-	end
-end
-
 function Binding.new(key, values)
-	assertIsNonEmptyString(key, "Binding key")
+	asserts.isNonEmptyString(key, "Binding key must not be an empty string.")
 	for _, value in ipairs(values) do
-		assertIsNonEmptyString(value, "Value argument")
+		asserts.isNonEmptyString(value, "Value argument must not be an empty string.")
 	end
 
 	local binding = setmetatable({}, Binding)
@@ -45,17 +36,11 @@ Binding.__tostring = Binding.toString
 Rule = {}
 Rule.__index = Rule
 
-local function assertIsInstanceOf(value, metatable, errmsg)
-	if type(value) ~= "table" or getmetatable(value) ~= metatable then
-		error(errmsg, 3)
-	end
-end
-
 function Rule.new(name, command, ...)
-	assertIsNonEmptyString(name, "Rule name")
-	assertIsNonEmptyString(command, "Command")
+	asserts.isNonEmptyString(name, "Rule name")
+	asserts.isNonEmptyString(command, "Command")
 	for _, value in ipairs({ ... }) do
-		assertIsInstanceOf(value, Binding, "Additional rule arguments must be bindings.")
+		asserts.isInstanceOf(value, Binding, "Additional rule arguments must be bindings.")
 	end
 
 	local rule = setmetatable({}, Rule)
@@ -93,7 +78,7 @@ BuildStatement = {}
 BuildStatement.__index = BuildStatement
 
 function BuildStatement.new(rule, inp, out)
-	assertIsInstanceOf(rule, Rule, "Build statement argument must be a rule.")
+	asserts.isInstanceOf(rule, Rule, "Build statement argument must be a rule.")
 	for _, i in ipairs(inp) do
 		assertIsNonEmptyString(i, "Build statement input")
 	end

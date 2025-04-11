@@ -1,11 +1,11 @@
 <div align="center">
     <img width="128" height="128" src="res/ninja-panda.jpg">
     <h1>Jōnin</h1>
-    <p>A lightweight, high-level, scriptable build system that generates Ninja files for your C (and soon C++) projects.</p>
+    <p>A lightweight, high-level, scriptable and hackable build system that generates Ninja files for your C (and soon C++) projects.</p>
 </div>
 
 > [!WARNING]
-> This project is currently in the early development phase and not yet considered stable. It is only supported on UNIX-like systems.
+> This project is currently in the early development phase and not yet considered stable. Braking changes are expected. It is only supported on UNIX-like systems.
 
 
 # Installation

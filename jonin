@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-# This script is a wrapper for the jōnin build system. Use this instead of calling the build-options.lua script directly.
+# This script is a wrapper for the jōnin build system
 
 if ! command -v "lua" > /dev/null 2>&1; then
 	echo "[Error] Lua interpreter not found."
@@ -15,16 +15,15 @@ fi
 JONIN_WORKING_DIRECTORY="$PWD"
 export JONIN_WORKING_DIRECTORY
 
-BUILD_OPTIONS="${1:-./build-options.lua}"
-
 LIB_DIR="$(cd -- "$(dirname -- "$(readlink -f -- "$0")")" && pwd)"
+LIB_MAIN="$LIB_DIR/src/main.lua"
+
 LIB_INCL_DIR="$LIB_DIR/include"
 LUA_PKG_PATH="$LIB_INCL_DIR/?.lua;$LIB_DIR/?.lua;;"
 
-if [[ -f "$BUILD_OPTIONS" ]]; then
-	exec lua -e "package.path='$LUA_PKG_PATH' .. package.path" "$BUILD_OPTIONS"
+if [[ -f "$LIB_DIR/src/main.lua" ]]; then
+	exec lua -e "package.path='$LUA_PKG_PATH' .. package.path" "$LIB_MAIN" "$@"
 else
-	echo "[Error] Build script '$BUILD_OPTIONS' not found."
-	exit 1
+	echo "[Error] Failed to locate main executable."
 fi
 

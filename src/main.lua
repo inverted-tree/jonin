@@ -1,53 +1,75 @@
+local macros = require("src.macros")
+local targets = require("src.targets")
 local utils = require("src.utils")
+local writer = require("src.writer")
 
-local project = {
-	cwd = os.getenv("JONIN_WORKING_DIRECTORY"),
-	targets = {},
-	ninjaFile = "build.ninja",
-}
+Project = {}
+Project.cwd = os.getenv("JONIN_WORKING_DIRECTORY")
+Project.macros = macros.macros
+Project.targets = targets.targets
 
-local function loadModule(moduleName)
-	local mod, err = utils.prequire(moduleName)
-	if not mod then
-		error(err)
+local taskList = {}
+
+local marker = nil
+for i, a in ipairs(arg) do
+	if utils.isBuildScript(a) then
+		if Project.buildOptions == nil then
+			Project.buildOptions = utils.makePath(Project.cwd, a)
+			marker = i
+		else
+			print("[Error] You can only specify one build script.")
+			utils.usage()
+			os.exit(1)
+		end
 	end
-	return mod
+end
+if marker ~= nil then
+	table.remove(arg, marker)
 end
 
-local function createTarget(name, opts)
-	loadModule("src.generators")
-
-	local target = {
-		filePath = project.ninjaFile,
-	}
-
-	target.language = utils.getLanguage(opts.language)
-	target.cc = opts.cc or "cc"
-
-	target.compileRule = Rule.new("compile", target.cc .. " $cflags -c $in -o $out")
-	target.linkRule = Rule.new("link", target.cc .. " $in -o $out")
-
-	if opts.cflags then
-		target.flags = Binding.new("cflags", opts.cflags)
+local defOptsPath = utils.getDefaultOptionsPath(Project.cwd)
+if Project.buildOptions == nil then
+	if utils.fileExists(defOptsPath) then
+		Project.buildOptions = defOptsPath
+	else
+		print(string.format("[Error] No build script specified and no %q found.", defOptsPath))
+		utils.usage()
+		os.exit(1)
 	end
-
-	target.files = utils.parseFilePaths(target.language, opts.files)
-
-	local ofiles = {}
-	target.compileStmts = {}
-	for _, file in ipairs(target.files) do
-		local ofile, _ = string.gsub(file, "%.c", ".o")
-		table.insert(ofiles, ofile)
-		table.insert(target.compileStmts, BuildStatement.new(target.compileRule, file, ofile))
+else
+	if not utils.fileExists(Project.buildOptions) then
+		print(string.format("[Error] No build script %q found.", defOptsPath))
+		utils.usage()
+		os.exit(1)
 	end
-
-	target.linkStmts = {}
-	table.insert(target.linkStmts, BuildStatement.new(target.linkRule, table.concat(ofiles, " "), name))
-
-	local writer = loadModule("src.writer")
-	writer.writeFile(target)
 end
 
-return {
-	createTarget = createTarget,
-}
+local env = setmetatable({
+	Target = targets.createTarget,
+	Macro = macros.createMacro,
+}, { __index = _G })
+local chunk = assert(loadfile(Project.buildOptions, "t", env))
+if chunk then
+	chunk()
+else
+	print(string.format("[Error] Failed to execute build script %q.\n", Project.buildOptions))
+	utils.usage()
+	os.exit(1)
+end
+
+for _, macro in ipairs(arg) do
+	if utils.containsKey(Project.macros, macro) then
+		table.insert(taskList, macro)
+	else
+		print(string.format("[Error] No such task macro '%s'.", macro))
+		utils.usage()
+		os.exit(1)
+	end
+end
+
+for _, task in ipairs(taskList) do
+	local macro = Project.macros[task]
+	macro.action()
+end
+
+writer.writeFile(Project.cwd .. "/build.ninja", Project.targets)

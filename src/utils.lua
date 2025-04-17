@@ -1,19 +1,9 @@
+local asserts = require("src.assertions")
+
 LANGUAGE = {
 	C = "c",
 	CPP = "c++",
 }
-
-local function assertNotNil(value, name)
-	local msg = nil
-	if value == nil then
-		if name then
-			msg = "'" .. name .. "'"
-		else
-			msg = "Argument"
-		end
-		error(msg .. " must not be nil.", 3)
-	end
-end
 
 local function prequire(mod)
 	local ok, err = pcall(require, mod)
@@ -24,13 +14,13 @@ local function prequire(mod)
 end
 
 local function join(target, source)
-	for _, v in ipairs(source) do
+	for _, v in pairs(source) do
 		table.insert(target, v)
 	end
 end
 
 local function executeCommand(command)
-	local handle = io.popen(command)
+	local handle = io.popen(command .. " 2>/dev/null")
 	if handle == nil then
 		error(string.format("Could not execute command '%s'", command), 2)
 	end
@@ -135,7 +125,7 @@ local function getFiles(language, path)
 end
 
 local function parseFilePaths(language, paths)
-	assertNotNil(paths, "Paths")
+	asserts.isNotNil(paths, "Paths")
 
 	local files = {}
 	for _, path in ipairs(paths) do
@@ -145,8 +135,61 @@ local function parseFilePaths(language, paths)
 	return files
 end
 
+local function printUsage()
+	print("\nUsage: $jonin [macro] <build-options.lua>\n")
+
+	print("Available macros:")
+	for k, v in pairs(Project.macros) do
+		print("\t" .. k .. "\t" .. v.desc)
+	end
+end
+
+local function makePath(dir, file)
+	return dir .. "/" .. file
+end
+
+local function getDefaultOptionsPath(cwd)
+	return makePath(cwd, "build-options.lua")
+end
+
+local function fileExists(file)
+	local cmd = string.format("find %q", file)
+	local result = executeCommand(cmd)
+	return #result == 1 and result[1] == file
+end
+
+local function isBuildScript(file)
+	return string.match(file, ".+%.lua$") and fileExists(file)
+end
+
+local function containsKey(table, key)
+	for k, _ in pairs(table) do
+		if k == key then
+			return true
+		end
+	end
+end
+
+local function contains(table, value)
+	for _, val in pairs(table) do
+		if val == value then
+			return true
+		end
+	end
+	return false
+end
+
 return {
+	fileExists = fileExists,
+	isBuildScript = isBuildScript,
 	prequire = prequire,
 	parseFilePaths = parseFilePaths,
 	getLanguage = getLanguage,
+	executeCommand = executeCommand,
+	contains = contains,
+	usage = printUsage,
+	getDefaultOptionsPath = getDefaultOptionsPath,
+	makePath = makePath,
+	containsKey = containsKey,
+	join = join,
 }

@@ -1,11 +1,8 @@
 -- This build script serves as a reference to write your own build-options.lua script.
 
--- Requiring this module is always necessary
-require("jonin")
-
 -- This function defines a new build target:
 Target(
-	"HelloWorld", -- name of the target
+	"hello_world", -- name of the target
 	{
 		language = "c", -- specify the language (optional, only influences which files will be included)
 		cc = "clang", -- set the compiler (optional, defaults to 'cc')
@@ -17,4 +14,12 @@ Target(
 			"test/**/src",
 		},
 	}
+)
+
+-- This function defines a new macro:
+Macro(
+	"hello", -- name of the macro
+	function() -- nullary function that performs the action
+		print("Hello from a macro!")
+	end
 )

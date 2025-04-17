@@ -6,4 +6,4 @@ build.ninja
 .ninja_log
 
 # The compiled test executable
-main
+build/

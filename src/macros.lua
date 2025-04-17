@@ -1,4 +1,3 @@
-local utils = require("src.utils")
 local asserts = require("src.assertions")
 
 local macros = {
@@ -28,9 +27,12 @@ local macros = {
 	},
 }
 
-local function createMacro(name, fun)
+local function createMacro(name, fun, desc)
 	asserts.isNullaryFunction(fun, string.format("Macro '%s' must be a parameterless function.", name))
-	macros[name] = fun
+	macros[name] = {
+		action = fun,
+		desc = desc,
+	}
 end
 
 return { macros = macros, createMacro = createMacro }

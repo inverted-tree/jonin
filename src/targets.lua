@@ -20,7 +20,8 @@ local function createTarget(name, opts)
 
 	local ofiles = {}
 	for _, file in ipairs(files) do
-		local ofile = string.gsub(file, "%.c", ".o")
+		file = string.gsub(file, "^%./", "")
+		local ofile = string.gsub(file, "%.c$", ".o")
 		table.insert(ofiles, ofile)
 		table.insert(statements, BuildStatement.new(rules.compile, file, ofile))
 	end

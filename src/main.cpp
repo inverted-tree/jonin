@@ -1,33 +1,32 @@
-#include "components/binding.hpp"
-#include "components/rule.hpp"
-#include "components/statement.hpp"
+#include "arg_parser.hpp"
+#include "lua.hpp"
+#include "lua_wrapper.hpp"
+#include <cstdlib>
 #include <iostream>
 #include <ostream>
-#include <vector>
+#include <stdexcept>
 
 using namespace jonin_bt;
 
 int main(int argc, char **argv) {
-	std::vector<std::string> v = {"This", "Is", "A", "Keylist"};
-	auto result = Binding::new_Binding("Hello", v);
-	if (!result)
-		printf("Ah damn!\n");
-	else
-		std::cout << result->to_string() << std::endl;
+	Options opts;
+	try {
+		opts = parse_arguments(argc, argv);
+	} catch (std::invalid_argument e) {
+		usage();
+		return EXIT_FAILURE;
+	}
 
-	auto rule = Rule::new_Rule("Somerule", "clang --version");
-	if (!result)
-		printf("Ah damn!\n");
-	else
-		std::cout << rule->to_string() << std::endl;
+	if (opts.script_path.empty())
+		opts.script_path = "script.lua";
 
-	std::vector<std::string> vin = {"somecfile.c"};
-	std::vector<std::string> vout = {"somecobject"};
-	auto statement = Statement::new_Statement(rule.value(), vin, vout);
-	if (!result)
-		printf("Ah damn!\n");
-	else
-		std::cout << statement->to_string() << std::endl;
+	try {
+		LuaInstance L;
+		L.exec_file(opts);
+	} catch (std::runtime_error e) {
+		std::cerr << e.what() << std::endl;
+		return EXIT_FAILURE;
+	}
 
-	return 0;
+	return EXIT_SUCCESS;
 }

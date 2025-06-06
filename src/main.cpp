@@ -1,5 +1,6 @@
 #include "components/binding.hpp"
 #include "components/rule.hpp"
+#include "components/statement.hpp"
 #include <iostream>
 #include <ostream>
 #include <vector>
@@ -19,6 +20,14 @@ int main(int argc, char **argv) {
 		printf("Ah damn!\n");
 	else
 		std::cout << rule->to_string() << std::endl;
+
+	std::vector<std::string> vin = {"somecfile.c"};
+	std::vector<std::string> vout = {"somecobject"};
+	auto statement = Statement::new_Statement(rule.value(), vin, vout);
+	if (!result)
+		printf("Ah damn!\n");
+	else
+		std::cout << statement->to_string() << std::endl;
 
 	return 0;
 }

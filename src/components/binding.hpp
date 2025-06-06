@@ -14,7 +14,9 @@ class Binding {
 
 	auto to_string() const -> std::string;
 
-	auto to_referece() const -> std::string;
+	auto to_reference() const -> std::string;
+
+	auto get_name() const -> std::string;
 
   private:
 	std::string name;

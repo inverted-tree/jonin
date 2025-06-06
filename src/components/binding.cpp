@@ -27,17 +27,19 @@ auto Binding::to_string() const -> string {
 	ostringstream oss;
 	oss << name << " =";
 
-	for (string const &value : values)
+	for (auto const &value : values)
 		oss << " " << value;
 
 	oss << "\n";
 	return oss.str();
 }
 
-auto Binding::to_referece() const -> string {
+auto Binding::to_reference() const -> string {
 	ostringstream oss;
 	oss << "${" << name << "}";
 	return oss.str();
 }
+
+auto Binding::get_name() const -> std::string { return name; }
 
 } // namespace jonin_bt

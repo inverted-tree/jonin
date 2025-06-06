@@ -23,7 +23,7 @@ auto Binding::new_Binding(const std::string &name,
 	}
 }
 
-auto Binding::to_string() -> string {
+auto Binding::to_string() const -> string {
 	ostringstream oss;
 	oss << name << " =";
 
@@ -34,7 +34,7 @@ auto Binding::to_string() -> string {
 	return oss.str();
 }
 
-auto Binding::to_referece() -> string {
+auto Binding::to_referece() const -> string {
 	ostringstream oss;
 	oss << "${" << name << "}";
 	return oss.str();

@@ -12,9 +12,9 @@ class Binding {
 	                        std::vector<std::string> const &values)
 	    -> std::expected<Binding, std::string>;
 
-	auto to_string() -> std::string;
+	auto to_string() const -> std::string;
 
-	auto to_referece() -> std::string;
+	auto to_referece() const -> std::string;
 
   private:
 	std::string name;

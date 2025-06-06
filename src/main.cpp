@@ -1,4 +1,5 @@
 #include "components/binding.hpp"
+#include "components/rule.hpp"
 #include <iostream>
 #include <ostream>
 #include <vector>
@@ -12,5 +13,12 @@ int main(int argc, char **argv) {
 		printf("Ah damn!\n");
 	else
 		std::cout << result->to_string() << std::endl;
+
+	auto rule = Rule::new_Rule("Somerule", "clang --version");
+	if (!result)
+		printf("Ah damn!\n");
+	else
+		std::cout << rule->to_string() << std::endl;
+
 	return 0;
 }

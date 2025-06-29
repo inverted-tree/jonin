@@ -29,13 +29,20 @@ auto LuaInstance::exec_file(Options const &opts) -> void {
 	auto result = luaL_loadfile(m_L, opts.script_path.c_str());
 	if (result != 0) {
 		cout << lua_tostring(m_L, -1) << endl;
-		lua_pop(m_L, 1);
+		lua_pop(m_L, 1); // Remove the error from the stack
 
 		throw runtime_error(string("Failed to load file '") + opts.script_path +
 		                    string("'"));
 	}
 
-	lua_pcall(m_L, 0, LUA_MULTRET, 0);
+	result = lua_pcall(m_L, 0, LUA_MULTRET, 0);
+	if (result != 0) {
+		string error = lua_tostring(m_L, -1);
+		lua_pop(m_L, 1);
+		throw runtime_error(
+		    "The lua interpreter encountered a runtime error: " + error);
+	}
+
 	return;
 }
 
@@ -99,9 +106,10 @@ auto make_target(lua_State *L) -> int {
 	}
 
 	auto target = Target::new_Target(target_options);
-	if (target.has_value())
+	if (target.has_value()) {
+		target->print_tgt();
 		return 0;
-	else
+	} else
 		return luaL_error(L, "Failed to create target");
 }
 

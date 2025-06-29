@@ -1,4 +1,9 @@
+print("This lua script gets executed")
+
 Target({
-	x = 42,
-	y = "Hello",
+	name = "TestTarget",
+	language = "c",
+	compiler = "clang",
+	cflags = "-Wall",
+	files = "test/**/src",
 })

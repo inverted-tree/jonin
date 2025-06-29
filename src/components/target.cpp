@@ -1,6 +1,7 @@
 #include "target.hpp"
 #include <expected>
 #include <filesystem>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string_view>
@@ -29,6 +30,10 @@ Target::Target(
 		if (!filesystem::exists(file))
 			throw invalid_argument("Source file '" + string(file) +
 			                       "' does not exist");
+}
+
+auto Target::print_tgt() -> void {
+	cout << "The target has name " << name << "." << endl;
 }
 
 auto strview_tolower(string_view sv) -> string {

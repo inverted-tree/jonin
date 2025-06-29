@@ -31,6 +31,8 @@ class Target {
 	new_Target(std::map<std::string, std::optional<std::string>> target_options)
 	    -> std::expected<Target, std::string>;
 
+	auto print_tgt() -> void;
+
   private:
 	/**
 	 * Name of the target. Lets one reference specific targets individually.

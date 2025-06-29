@@ -34,6 +34,7 @@ class Target {
 	           std::optional<std::string> description)
 	    -> std::expected<Target, std::string>;
 
+	auto get_name() -> std::string;
 	auto print_tgt() -> void;
 
   private:

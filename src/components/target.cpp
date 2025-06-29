@@ -33,6 +33,8 @@ Target::Target(
 			                       "' does not exist");
 }
 
+auto Target::get_name() -> std::string { return name; }
+
 auto Target::print_tgt() -> void {
 	auto print_vector = [](const std::string &label,
 	                       const std::optional<std::vector<std::string>> &vec) {

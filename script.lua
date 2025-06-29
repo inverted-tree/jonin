@@ -5,4 +5,8 @@ Target("TestTarget", {
 	compiler = "clang",
 	cflags = "-Wall",
 	files = { "test/main.c" },
-}, "A basic target to thest if the parser works")
+}, "A basic target to test if the parser works")
+
+Macro("TestMacro", function()
+	print("Hello from a test macro!")
+end, "Just a test macro!")

@@ -147,12 +147,33 @@ auto make_macro(lua_State *L) -> int {
 	if (!lua_isfunction(L, 2))
 		return luaL_error(L, "Second argument to Macro must be a function");
 
+	// stack: name, function, (description)
 	char const *name = lua_tostring(L, 1);
 
-	lua_getglobal(L, "macros"); // stack: name, function, macros
-	lua_pushvalue(L, 2);        // Copy the function to the top of the stack
-	lua_setfield(L, -2, name);  // macros[name] = function
-	lua_pop(L, 1);              // Pop the macros table
+	char const *description = "";
+	if (lua_gettop(L) >= 3 && lua_isstring(L, 3)) {
+		description = lua_tostring(L, 3);
+	}
+
+	int lua_function_index = 2;
+	auto macro = Macro::new_Lua_Macro(name, L, lua_function_index, description);
+	if (!macro) {
+		return luaL_error(L, "Failed to regiser macro '%s'", name);
+	}
+	macro->print_macro();
+
+	lua_getglobal(L, "macros");
+
+	if (lua_isnil(L, -1)) {
+		lua_pop(L, 1);
+		lua_newtable(L);
+		lua_setglobal(L, "macros");
+		lua_getglobal(L, "macros");
+	}
+
+	lua_pushvalue(L, 2);       // Copy the function to the top of the stack
+	lua_setfield(L, -2, name); // macros[name] = function
+	lua_pop(L, 1);             // Pop the macros table
 
 	return 0;
 }

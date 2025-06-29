@@ -1,6 +1,7 @@
 #include "arg-parser.hpp"
 #include "lua-wrapper.hpp"
 #include "lua.hpp"
+#include "project.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <ostream>
@@ -19,6 +20,7 @@ int main(int argc, char **argv) {
 
 	if (opts.script_path.empty())
 		opts.script_path = "script.lua";
+	Project project = Project::new_Project(opts.script_path);
 
 	try {
 		LuaInstance Lua;

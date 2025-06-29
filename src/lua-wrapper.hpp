@@ -1,6 +1,6 @@
 #pragma once
 
-#include "arg_parser.hpp"
+#include "arg-parser.hpp"
 #include "lua.hpp"
 
 namespace jonin_bt {
@@ -10,7 +10,7 @@ class LuaInstance {
 	LuaInstance();
 	~LuaInstance();
 
-	auto exec_file(Options const opts) -> void;
+	auto exec_file(Options const &opts) -> void;
 
   private:
 	lua_State *const m_L;

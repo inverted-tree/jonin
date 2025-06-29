@@ -1,6 +1,6 @@
-#include "arg_parser.hpp"
+#include "arg-parser.hpp"
+#include "lua-wrapper.hpp"
 #include "lua.hpp"
-#include "lua_wrapper.hpp"
 #include <cstdlib>
 #include <iostream>
 #include <ostream>
@@ -21,8 +21,8 @@ int main(int argc, char **argv) {
 		opts.script_path = "script.lua";
 
 	try {
-		LuaInstance L;
-		L.exec_file(opts);
+		LuaInstance Lua;
+		Lua.exec_file(opts);
 	} catch (std::runtime_error e) {
 		std::cerr << e.what() << std::endl;
 		return EXIT_FAILURE;

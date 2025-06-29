@@ -1,9 +1,8 @@
 print("This lua script gets executed")
 
-Target({
-	name = "TestTarget",
+Target("TestTarget", {
 	language = "c",
 	compiler = "clang",
 	cflags = "-Wall",
-	files = "test/**/src",
-})
+	files = "test/main.c",
+}, "A basic target to thest if the parser works")

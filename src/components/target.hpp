@@ -19,6 +19,7 @@ enum Language {
 	C,
 	CPP,
 	FORTRAN,
+	ASSEMBLY,
 	UNDEFINED,
 };
 
@@ -28,7 +29,9 @@ enum Language {
 class Target {
   public:
 	static auto
-	new_Target(std::map<std::string, std::optional<std::string>> target_options)
+	new_Target(std::string name,
+	           std::map<std::string, std::optional<std::string>> target_options,
+	           std::optional<std::string> description)
 	    -> std::expected<Target, std::string>;
 
 	auto print_tgt() -> void;
@@ -87,18 +90,23 @@ class Target {
 	 * Dependencies that will be linked to the target.
 	 */
 	std::optional<std::vector<std::string>> dependencies;
+	/**
+	 * Optional description of the target.
+	 */
+	std::optional<std::string> description;
 
-	Target(std::string name_, Language language_,
-	       std::optional<std::string> compiler_,
-	       std::optional<std::vector<std::string>> cflags_,
-	       std::optional<std::vector<std::string>> cxxflags_,
-	       std::optional<std::vector<std::string>> fcflags_,
-	       std::optional<std::vector<std::string>> ldflags_,
-	       std::optional<std::vector<std::string>> cppflags_,
-	       std::optional<std::vector<std::string>> asflags_,
-	       std::optional<std::vector<std::string>> arflags_,
-	       std::vector<std::filesystem::path> source_files_,
-	       std::optional<std::vector<std::string>> dependencies_);
+	Target(std::string name, Language language,
+	       std::optional<std::string> compiler,
+	       std::optional<std::vector<std::string>> cflags,
+	       std::optional<std::vector<std::string>> cxxflags,
+	       std::optional<std::vector<std::string>> fcflags,
+	       std::optional<std::vector<std::string>> ldflags,
+	       std::optional<std::vector<std::string>> cppflags,
+	       std::optional<std::vector<std::string>> asflags,
+	       std::optional<std::vector<std::string>> arflags,
+	       std::vector<std::filesystem::path> source_files,
+	       std::optional<std::vector<std::string>> dependencies,
+	       std::optional<std::string> description);
 };
 
 } // namespace jonin_bt

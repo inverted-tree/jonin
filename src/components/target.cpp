@@ -19,11 +19,12 @@ Target::Target(
     optional<vector<string>> fcflags_, optional<vector<string>> ldflags_,
     optional<vector<string>> cppflags_, optional<vector<string>> asflags_,
     optional<vector<string>> arflags_, vector<filesystem::path> source_files_,
-    optional<vector<string>> dependencies_)
+    optional<vector<string>> dependencies_, optional<string> description_)
     : name(name_), language(language_), compiler(compiler_), cflags(cflags_),
       cxxflags(cxxflags_), fcflags(fcflags_), ldflags(ldflags_),
       cppflags(cppflags_), asflags(asflags_), arflags(arflags_),
-      source_files(source_files_), dependencies(dependencies_) {
+      source_files(source_files_), dependencies(dependencies_),
+      description(description_) {
 	if (name.empty())
 		throw invalid_argument("A targets name must not be empty");
 	for (filesystem::path file : source_files)
@@ -33,7 +34,58 @@ Target::Target(
 }
 
 auto Target::print_tgt() -> void {
-	cout << "The target has name " << name << "." << endl;
+	auto print_vector = [](const std::string &label,
+	                       const std::optional<std::vector<std::string>> &vec) {
+		std::cout << label << ": ";
+		if (vec && !vec->empty()) {
+			for (const auto &val : *vec)
+				std::cout << val << " ";
+		} else {
+			std::cout << "(none)";
+		}
+		std::cout << "\n";
+	};
+
+	auto language_to_string = [](Language lang) -> std::string {
+		switch (lang) {
+		case Language::C:
+			return "C";
+		case Language::CPP:
+			return "C++";
+		case Language::FORTRAN:
+			return "Fortran";
+		case Language::ASSEMBLY:
+			return "Assembly";
+		default:
+			return "Unknown";
+		}
+	};
+
+	std::cout << "Target name: " << name << "\n";
+	std::cout << "Language: " << language_to_string(language) << "\n";
+	std::cout << "Compiler: " << (compiler ? *compiler : "(none)") << "\n";
+
+	print_vector("CFLAGS", cflags);
+	print_vector("CXXFLAGS", cxxflags);
+	print_vector("FCFLAGS", fcflags);
+	print_vector("LDFLAGS", ldflags);
+	print_vector("CPPFLAGS", cppflags);
+	print_vector("ASFLAGS", asflags);
+	print_vector("ARFLAGS", arflags);
+
+	std::cout << "Source Files: ";
+	if (!source_files.empty()) {
+		for (const auto &path : source_files)
+			std::cout << path << " ";
+	} else {
+		std::cout << "(none)";
+	}
+	std::cout << "\n";
+
+	print_vector("Dependencies", dependencies);
+
+	std::cout << "Target description: " << description.value_or("(none)")
+	          << "\n";
 }
 
 auto strview_tolower(string_view sv) -> string {
@@ -43,11 +95,10 @@ auto strview_tolower(string_view sv) -> string {
 	return result;
 }
 
-auto Target::new_Target(
-    std::map<std::string, std::optional<std::string>> target_options)
-    -> std::expected<Target, std::string> {
-	string name = target_options["name"].value_or("Default");
-
+auto Target::new_Target(string name,
+                        map<string, optional<string>> target_options,
+                        optional<string> description)
+    -> expected<Target, string> {
 	Language language = [](string_view l) -> Language {
 		string lang = strview_tolower(l);
 		if (lang == "undefined")
@@ -106,7 +157,7 @@ auto Target::new_Target(
 	try {
 		return Target(name, language, compiler, cflags, cxxflags, fcflags,
 		              ldflags, cppflags, asflags, arflags, source_files,
-		              dependencies);
+		              dependencies, description);
 	} catch (invalid_argument const &e) {
 		return unexpected(string(e.what()));
 	}

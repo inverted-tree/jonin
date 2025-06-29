@@ -56,7 +56,10 @@ map<string, optional<string>> const _target_options = {
 auto make_target(lua_State *L) -> int {
 	int nargs = lua_gettop(L);
 	if (nargs < 2 || nargs > 3)
-		return luaL_error(L, "'Target' expects 2 + 1 optional arguments");
+		return luaL_error(
+		    L,
+		    "'Target' expects 2 (+ 1 optional) arguments but %d were provided",
+		    nargs);
 
 	if (!lua_isstring(L, 1))
 		return luaL_error(L, "First argument to 'Target' must be a string");
@@ -105,7 +108,7 @@ auto make_target(lua_State *L) -> int {
 		lua_pop(L, 1);
 	}
 
-	auto target = Target::new_Target(target_options);
+	auto target = Target::new_Target(name, target_options, description);
 	if (target.has_value()) {
 		target->print_tgt();
 		return 0;

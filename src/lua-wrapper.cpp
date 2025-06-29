@@ -94,7 +94,32 @@ auto make_target(lua_State *L) -> int {
 
 		if (lua_isnil(L, -1)) {
 			it->second = std::nullopt;
-
+		} else if (key == "files") {
+			if (lua_isstring(L, -1)) {
+				it->second = string(lua_tostring(L, -1));
+			} else if (lua_istable(L, -1)) {
+				// Concat all strings into a space-separated list
+				string result;
+				lua_Integer table_length = lua_rawlen(L, -1);
+				for (lua_Integer i = 1; i <= table_length; i++) {
+					lua_rawgeti(L, -1, i);
+					if (!lua_isstring(L, -1)) {
+						lua_pop(L, 2); // value + parent table
+						return luaL_error(
+						    L, "The 'files' list must contain only strings");
+					}
+					if (!result.empty())
+						result += " ";
+					result += lua_tostring(L, -1);
+					lua_pop(L, 1);
+				}
+				it->second = result;
+			} else {
+				lua_pop(L, 2);
+				return luaL_error(
+				    L,
+				    "'files' must be a string or a table of strings (or nil)");
+			}
 		} else if (lua_isstring(L, -1)) {
 			it->second = string(lua_tostring(L, -1));
 

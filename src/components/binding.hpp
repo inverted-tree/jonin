@@ -6,6 +6,9 @@
 
 namespace jonin_bt {
 
+/**
+ * Represents a Ninja-binding such as 'cflags = -Wall'
+ */
 class Binding {
   public:
 	static auto new_Binding(std::string const &name,
@@ -13,9 +16,7 @@ class Binding {
 	    -> std::expected<Binding, std::string>;
 
 	auto to_string() const -> std::string;
-
 	auto to_reference() const -> std::string;
-
 	auto get_name() const -> std::string;
 
   private:

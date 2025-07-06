@@ -1,36 +1,30 @@
 #pragma once
 
-extern "C" {
-#include "lua.h"
-}
 #include <expected>
 #include <string>
 #include <variant>
+
+extern "C" {
+#include "lua.h"
+}
 
 namespace jonin_bt {
 using MacroFunction = std::variant<int, int (*)(lua_State *)>;
 
 class Macro {
   public:
-	// static auto new_Macro(std::string const &name, int lua_function,
-	//                       std::string const &description)
-	//     -> std::expected<Macro, std::string>;
-
 	static auto new_C_Macro(std::string const &name,
 	                        int (*function)(lua_State *),
 	                        std::string const &description)
 	    -> std::expected<Macro, std::string>;
-
 	static auto new_Lua_Macro(std::string const &name, lua_State *L,
 	                          int lua_function_index,
 	                          std::string const &description)
 	    -> std::expected<Macro, std::string>;
 
-	auto execute() -> void;
-
-	auto print_macro() -> void;
-
-	auto get_name() -> std::string;
+	auto execute() const -> void;
+	auto print_macro() const -> void;
+	auto get_name() const -> std::string;
 
   private:
 	std::string name;

@@ -15,7 +15,6 @@ class Rule {
 	    -> std::expected<Rule, std::string>;
 
 	auto to_string() const -> std::string;
-
 	auto to_reference() const -> std::string;
 
   private:

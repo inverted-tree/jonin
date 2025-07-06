@@ -18,10 +18,6 @@ int main(int argc, char **argv) {
 		return EXIT_FAILURE;
 	}
 
-	if (opts.script_path.empty())
-		opts.script_path = "script.lua";
-	Project project = Project::new_Project(opts.script_path);
-
 	try {
 		LuaInstance Lua;
 		Lua.exec_file(opts);
@@ -29,6 +25,8 @@ int main(int argc, char **argv) {
 		std::cerr << e.what() << std::endl;
 		return EXIT_FAILURE;
 	}
+
+	Project::instance()->write_to_disk();
 
 	return EXIT_SUCCESS;
 }

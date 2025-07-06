@@ -3,25 +3,35 @@
 #include "components/macro.hpp"
 #include "components/target.hpp"
 #include <filesystem>
+#include <memory>
+#include <mutex>
 #include <unordered_map>
 
 namespace jonin_bt {
+using TargetMap = std::unordered_map<std::string, Target>;
+using MacroMap = std::unordered_map<std::string, Macro>;
 
 class Project {
   public:
-	static auto new_Project(std::string script_path) -> Project;
-	auto register_Target(Target target) -> void;
-	auto register_Macro(Macro macro) -> void;
-	auto write_build_script() -> void;
+	static auto instance() -> Project *;
+
+	auto register_Target(Target const &target) -> void;
+	auto register_Macro(Macro const &macro) -> void;
+	auto write_to_disk() const -> void;
+
+	Project(Project const &obj) = delete;
 
   private:
-	std::string name;
-	std::filesystem::path script;
-	std::filesystem::path build_file;
-	std::unordered_map<std::string, Target> targets;
-	std::unordered_map<std::string, Macro> macros;
+	static Project *instance_;
+	static std::mutex mtx;
 
-	Project(std::filesystem::path script);
+	std::string name;
+	std::filesystem::path lua_script;
+	std::filesystem::path build_file;
+	TargetMap targets;
+	MacroMap macros;
+
+	Project();
 };
 
 } // namespace jonin_bt

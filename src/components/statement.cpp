@@ -30,6 +30,14 @@ auto Statement::new_Statement(Rule const &rule, vector<string> const &inputs,
 	return new_Statement(rule, inputs, outputs, no_bindings);
 }
 
+auto Statement::get_inputs() const -> std::vector<std::string> {
+	return inputs;
+}
+
+auto Statement::get_outputs() const -> std::vector<std::string> {
+	return outputs;
+}
+
 auto Statement::to_string() const -> string {
 	ostringstream oss;
 	oss << "build";
@@ -38,7 +46,7 @@ auto Statement::to_string() const -> string {
 	oss << ": " << rule.to_reference();
 	for (auto const &input : inputs)
 		oss << " " << input;
-	oss << "\n";
+	oss << endl;
 
 	for (auto const &binding : bindings)
 		oss << "    " << binding.to_string();

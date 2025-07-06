@@ -4,11 +4,12 @@
 #include "components/rule.hpp"
 #include "components/statement.hpp"
 #include "components/target.hpp"
+#include "project.hpp"
 #include <expected>
 #include <iostream>
-#include <map>
 #include <optional>
 #include <stdexcept>
+#include <unordered_map>
 
 namespace jonin_bt {
 using namespace std;
@@ -47,7 +48,7 @@ auto LuaInstance::exec_file(Options const &opts) -> void {
 }
 
 extern "C" {
-map<string, optional<string>> const _target_options = {
+unordered_map<string, optional<string>> const _target_options = {
     {"name", nullopt},    {"language", nullopt}, {"compiler", nullopt},
     {"cflags", nullopt},  {"cxxflags", nullopt}, {"fcflags", nullopt},
     {"ldflags", nullopt}, {"cppflags", nullopt}, {"asflags", nullopt},
@@ -76,7 +77,7 @@ auto make_target(lua_State *L) -> int {
 		description = lua_tostring(L, 3);
 	}
 
-	map<string, optional<string>> target_options = _target_options;
+	unordered_map<string, optional<string>> target_options = _target_options;
 	lua_pushnil(L);
 	while (lua_next(L, 2) != 0) {
 		// stack: key at -2, value at -1
@@ -135,7 +136,7 @@ auto make_target(lua_State *L) -> int {
 
 	auto target = Target::new_Target(name, target_options, description);
 	if (target.has_value()) {
-		target->print_tgt();
+		Project::instance()->register_Target(target.value());
 		return 0;
 	} else
 		return luaL_error(L, "Failed to create target");
@@ -160,7 +161,7 @@ auto make_macro(lua_State *L) -> int {
 	if (!macro) {
 		return luaL_error(L, "Failed to regiser macro '%s'", name);
 	}
-	macro->print_macro();
+	Project::instance()->register_Macro(macro.value());
 
 	lua_getglobal(L, "macros");
 

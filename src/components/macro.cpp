@@ -2,11 +2,12 @@
 #include <cstdlib>
 #include <expected>
 #include <iostream>
+#include <stdexcept>
+
 extern "C" {
 #include "lua.h"
 #include <lauxlib.h>
 }
-#include <stdexcept>
 
 namespace jonin_bt {
 using namespace std;
@@ -21,22 +22,22 @@ Macro::Macro(string const &name_, lua_State *L_, int lua_ref_,
              string const &description_)
     : name(name_), L(L_), function(lua_ref_), description(description_) {
 	if (name.empty())
-		throw invalid_argument("A macro name must not be empty");
+		throw invalid_argument("A macro's name must not be empty");
 }
 
 Macro::Macro(string const &name_, int (*function_)(lua_State *),
              string const &description_)
     : name(name_), function(function_), description(description_) {
 	if (name.empty())
-		throw invalid_argument("A macro name must not be empty");
+		throw invalid_argument("A macro's name must not be empty");
 }
 
-auto Macro::print_macro() -> void {
+auto Macro::print_macro() const -> void {
 	cout << "Macro name: " << name << endl;
 	cout << "Macro description: " << description << endl;
 }
 
-auto Macro::get_name() -> std::string { return name; }
+auto Macro::get_name() const -> std::string { return name; }
 
 auto Macro::new_Lua_Macro(std::string const &name, lua_State *L,
                           int lua_function_index,

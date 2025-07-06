@@ -17,6 +17,8 @@ auto parse_arguments(int const argc, char *const argv[]) -> Options {
 
 	if (args.size() == 2 && (access(args[1].c_str(), F_OK) != -1))
 		opts.script_path = args[1];
+	else
+		opts.script_path = ".build.lua";
 
 	return opts;
 }

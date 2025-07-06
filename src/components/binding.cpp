@@ -9,7 +9,7 @@ using namespace std;
 Binding::Binding(const string &name_, vector<string> const &values_)
     : name(name_), values(values_) {
 	if (name.empty())
-		throw invalid_argument("A bindings name cannot be empty");
+		throw invalid_argument("A binding's name cannot be empty");
 };
 
 auto Binding::new_Binding(const std::string &name,
@@ -30,7 +30,7 @@ auto Binding::to_string() const -> string {
 	for (auto const &value : values)
 		oss << " " << value;
 
-	oss << "\n";
+	oss << endl;
 	return oss.str();
 }
 

@@ -21,6 +21,8 @@ class Statement {
 	                          std::vector<Binding> const &bindings)
 	    -> std::expected<Statement, std::string>;
 
+	auto get_inputs() const -> std::vector<std::string>;
+	auto get_outputs() const -> std::vector<std::string>;
 	auto to_string() const -> std::string;
 
   private:

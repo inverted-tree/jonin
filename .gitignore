@@ -1,9 +1,11 @@
 # Compiled Object files
+build/
 *.o
+jonin
 
-# Ninja related stuff
-build.ninja
+# Ninja logs
 .ninja_log
 
-# The compiled test executable
-build/
+# Formatter
+.clang-format
+.clangd

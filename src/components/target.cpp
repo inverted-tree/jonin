@@ -185,6 +185,8 @@ auto Target::new_Target(string name,
                         unordered_map<string, optional<string>> target_options,
                         optional<string> description)
     -> expected<Target, string> {
+	std::replace(name.begin(), name.end(), ' ', '_');
+
 	string compiler;
 	if (target_options.contains("compiler")) {
 		auto maybe_c = target_options["compiler"];

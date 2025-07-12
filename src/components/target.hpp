@@ -26,6 +26,7 @@ class Target {
   private:
 	std::string name;
 	std::string compiler;
+	std::string linker;
 	std::unordered_map<std::string, std::optional<std::vector<std::string>>>
 	    flags;
 	std::vector<std::filesystem::path> source_files;
@@ -39,7 +40,7 @@ class Target {
 	auto build_link_command() const -> std::string;
 
 	Target(
-	    std::string name, std::string compiler,
+	    std::string name, std::string compiler, std::string linker,
 	    std::unordered_map<std::string, std::optional<std::vector<std::string>>>
 	        flags,
 	    std::vector<std::filesystem::path> source_files,

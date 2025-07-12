@@ -49,10 +49,11 @@ auto LuaInstance::exec_file(Options const &opts) -> void {
 
 extern "C" {
 unordered_map<string, optional<string>> const _target_options = {
-    {"name", nullopt},    {"language", nullopt}, {"compiler", nullopt},
-    {"cflags", nullopt},  {"cxxflags", nullopt}, {"fcflags", nullopt},
-    {"ldflags", nullopt}, {"cppflags", nullopt}, {"asflags", nullopt},
-    {"arflags", nullopt}, {"files", nullopt},    {"dependencies", nullopt}};
+    {"name", nullopt},        {"language", nullopt}, {"compiler", nullopt},
+    {"linker", nullopt},      {"cflags", nullopt},   {"cxxflags", nullopt},
+    {"fcflags", nullopt},     {"ldflags", nullopt},  {"cppflags", nullopt},
+    {"asflags", nullopt},     {"arflags", nullopt},  {"files", nullopt},
+    {"dependencies", nullopt}};
 
 auto make_target(lua_State *L) -> int {
 	int nargs = lua_gettop(L);

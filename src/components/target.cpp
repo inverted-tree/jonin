@@ -21,12 +21,12 @@ auto split_optional_string(optional<string> &str) -> optional<vector<string>>;
 auto expand_path(string &glob) -> vector<filesystem::path>;
 
 Target::Target(
-    std::string name_, std::string compiler_,
+    std::string name_, std::string compiler_, std::string linker_,
     std::unordered_map<std::string, std::optional<std::vector<std::string>>>
         flags_,
     std::vector<std::filesystem::path> source_files_,
     std::optional<std::string> description_)
-    : name(name_), compiler(compiler_), flags(flags_),
+    : name(name_), compiler(compiler_), linker(linker_), flags(flags_),
       source_files(source_files_), description(description_) {
 	if (name.empty())
 		throw invalid_argument("A targets name must not be empty");
@@ -77,7 +77,7 @@ auto Target::build_compile_command() const -> string {
 
 auto Target::build_link_command() const -> string {
 	ostringstream cmd;
-	cmd << compiler;
+	cmd << linker;
 
 	unordered_set<string> allowed_bindings = {
 	    "ldflags",
@@ -194,6 +194,17 @@ auto Target::new_Target(string name,
 			compiler = maybe_c.value();
 	}
 
+	string linker;
+	if (target_options.contains("linker")) {
+		auto maybe_ld = target_options["linker"];
+		if (maybe_ld.has_value())
+			linker = maybe_ld.value();
+		else
+			linker = compiler;
+	} else {
+		linker = compiler;
+	}
+
 	auto splitstr = [](optional<string> &str) -> optional<vector<string>> {
 		if (!str.has_value())
 			return nullopt;
@@ -241,7 +252,7 @@ auto Target::new_Target(string name,
 
 	try {
 		Target target =
-		    Target(name, compiler, flags, source_files, description);
+		    Target(name, compiler, linker, flags, source_files, description);
 		return target;
 	} catch (invalid_argument const &e) {
 		return unexpected(string(e.what()));

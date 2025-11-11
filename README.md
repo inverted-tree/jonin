@@ -1,11 +1,11 @@
 <div align="center">
-    <img width="128" height="128" src="res/ninja-panda.jpg">
-    <h1>Jōnin</h1>
-    <p>A lightweight, hackable build system that generates Ninja files for your C projects.</p>
+    <h1>Jōnin.</h1>
+    <p>A lightweight build file generator that uses Lua for an <i>enjoyable</i> scripting experience, generating Ninja files for your C and C++ projects.</p>
+    <img height="128" src="res/katana.png">
 </div>
 
 > [!WARNING]
-> This project is currently in development. Breaking changes are expected until a beta is released.
+> This project is currently in development. Breaking changes are expected.
 
 
 # Installation

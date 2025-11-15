@@ -1,11 +1,11 @@
 <div align="center">
     <h1>Jōnin.</h1>
-    <p>A lightweight build file generator that uses Lua for an <i>enjoyable</i> scripting experience, generating Ninja files for your C and C++ projects.</p>
+    <p>A lightweight build file generator that uses Lua for an <i>enjoyable</i> scripting experience, seamlessly generating Ninja files for your C and C++ projects.</p>
     <img height="128" src="res/katana.png">
 </div>
 
 > [!WARNING]
-> This project is currently in development. Breaking changes are expected.
+> This project is currently **in development**. If you are in the need for a _stable_ Lua-based build tool, check out [xmake](https://xmake.io/).
 
 
 # Installation

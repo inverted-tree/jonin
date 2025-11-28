@@ -1,7 +1,7 @@
 <div align="center">
     <h1>Jōnin.</h1>
     <p>A lightweight build file generator that uses Lua for an <i>enjoyable</i> scripting experience, seamlessly generating Ninja files for your C and C++ projects.</p>
-    <img height="128" src="res/katana.png">
+    <img height="128" src="res/ninja.png">
 </div>
 
 > [!WARNING]
